@@ -1,12 +1,12 @@
-** array-unsort **
+**array-unsort**
 
 
-Installation
+**Installation**
 
 `npm install array-unsort`
 
 
-Usage
+**Usage**
 
 ```
 var unsort = require("array-unsort").unsort;
@@ -19,6 +19,6 @@ for (var i = 0; i < 100; i++) {
 var unsorted = unsort(sorted);
 ```
 
-Errors
+**Errors**
 
 If no argument is passed, a ReferenceError is thrown. If passed argument is not an array, a TypeError is thrown
