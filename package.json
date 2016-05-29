@@ -1,0 +1,18 @@
+{
+  "name": "array-unsort",
+  "version": "0.0.1",
+  "description": "Unsorts arbitrary array",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "array",
+    "unsort"
+  ],
+  "author": "Bo Ericsson <bo@boe.net> (http://www.github.com/boeric)",
+  "license": "MIT",
+  "dependencies": {
+    "d3": "^3.5.17"
+  }
+}
