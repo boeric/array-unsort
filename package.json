@@ -3,6 +3,10 @@
   "version": "0.0.2",
   "description": "Unsorts arbitrary array",
   "main": "index.js",
+  "repository": { 
+    "type": "git",
+    "url": "https://github.com/boeric/array-unsort.git"
+  },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
