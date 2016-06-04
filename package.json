@@ -3,7 +3,7 @@
   "version": "0.0.2",
   "description": "Unsorts arbitrary array",
   "main": "index.js",
-  "repository": { 
+  "repository": {
     "type": "git",
     "url": "https://github.com/boeric/array-unsort.git"
   },
@@ -12,7 +12,8 @@
   },
   "keywords": [
     "array",
-    "unsort"
+    "unsort",
+    "shuffle"
   ],
   "author": "Bo Ericsson <bo@boe.net> (http://www.github.com/boeric)",
   "license": "MIT",
