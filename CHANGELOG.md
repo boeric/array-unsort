@@ -1,3 +1,6 @@
+0.0.3
+- Added keyword shuffle
+
 0.0.2
 - Added repo in package.json
 

@@ -1,6 +1,6 @@
 {
   "name": "array-unsort",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "description": "Unsorts arbitrary array",
   "main": "index.js",
   "repository": {
