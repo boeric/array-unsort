@@ -1,12 +1,16 @@
-**array-unsort**
-
+##array-unsort##
 
 **Installation**
 
 `npm install array-unsort`
 
+###Unsort/shuffle###
 
-**Usage**
+array-unsort.**unsort**(array)
+
+The **unsort** method unsorts (shuffles) the passed array reference.
+
+**Example**
 
 ```
 var unsort = require("array-unsort").unsort;
@@ -21,4 +25,4 @@ var unsorted = unsort(sorted);
 
 **Errors**
 
-If no argument is passed, a ReferenceError is thrown. If passed argument is not an array, a TypeError is thrown
+If **no** array is passed, a **ReferenceError** is thrown. If the passed argument is **not an array**, a **TypeError** is thrown

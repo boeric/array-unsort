@@ -1,3 +1,6 @@
+0.0.4
+- Readme updates
+
 0.0.3
 - Added keyword shuffle
 
