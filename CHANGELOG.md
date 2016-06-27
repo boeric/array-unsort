@@ -1,3 +1,6 @@
+0.1.1
+- Readme edits
+
 0.1.0
 - Added Mocha/Chai tests
 - Added array in-place unsort

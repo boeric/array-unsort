@@ -7,9 +7,10 @@
 ##Unsort/shuffle an arbitrary array
 
 array-unsort.**unsort**(array)
+
 array-unsort.**unsortInplace**(array)
 
-The **unsort** method unsorts (shuffles) and returns a copy of the input array. The **unsortInplace** method unsorts the input array in-place. The module uses the Fisher-Yates algorithm.
+The **unsort** method unsorts (shuffles) and returns a copy of the input array. The **unsortInplace** method unsorts the input array in-place. The module uses the **Fisher-Yates** algorithm.
 
 **Example**
 
