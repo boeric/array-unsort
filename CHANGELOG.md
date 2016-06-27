@@ -1,3 +1,8 @@
+0.1.0
+- Added Mocha/Chai tests
+- Added array in-place unsort
+- Implemented Fisher/Yates algorithm
+
 0.0.4
 - Readme updates
 
