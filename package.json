@@ -2,13 +2,13 @@
   "name": "array-unsort",
   "version": "0.1.0",
   "description": "Unsorts arbitrary array",
-  "main": "index.js",
+  "main": "src/index.js",
   "repository": {
     "type": "git",
     "url": "https://github.com/boeric/array-unsort.git"
   },
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "$(npm bin)/mocha test -t 4000 --require test/chai.js"
   },
   "keywords": [
     "array",
@@ -17,7 +17,10 @@
   ],
   "author": "Bo Ericsson <bo@boe.net> (http://www.github.com/boeric)",
   "license": "MIT",
-  "dependencies": {
-    "d3": "^3.5.17"
+  "dependencies": {},
+  "devDependencies": {
+    "chai": "^3.5.0",
+    "d3": "^3.5.17",
+    "mocha": "^2.5.3"
   }
 }
