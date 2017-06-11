@@ -1,10 +1,10 @@
-#array-unsort
+# array-unsort
 
 **Installation**
 
 `npm install array-unsort --save`
 
-##Unsort/shuffle an arbitrary array
+## Unsort/shuffle an arbitrary array
 
 array-unsort.**unsort**(array)
 
@@ -12,7 +12,7 @@ array-unsort.**unsortInplace**(array)
 
 The **unsort** method unsorts (shuffles) and returns a copy of the input array. The **unsortInplace** method unsorts the input array in-place. The module uses the **Fisher-Yates** algorithm.
 
-**Example**
+### Example
 
 ```
 var unsort = require("array-unsort").unsort;
@@ -39,14 +39,14 @@ console.log("In-place unsort: " + (unsorted === sorted)); // = true
 
 ```
 
-**Test**
+### Test
 
 ```
 npm run test
 
 ```
 
-**Errors**
+### Errors
 
 If **no** array is passed, a **ReferenceError** is thrown.
 
