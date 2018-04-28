@@ -1,63 +1,44 @@
-"use strict";
+'use strict';
 
 /*
  * array-unsort
  */
 
-
 module.exports = {
+    unsort: function(input) {
+        _validate(input);
+        return(_unsort(input, input.slice()));
+    },
+    unsortInplace: function(input) {
+        _validate(input);
+        return(_unsort(input, input));
+    }
+};
 
-  unsort: function(input, inPlace) {
+function _unsort(input, output) {
+    var length = input.length;
+    var currSize;
+    var swapIdx;
+    var idx;
+    var item;
 
-    validateInput(input);
-    return(_unsort(input, inPlace ? true : false));
+    // Fisher-Yates shuffle
+    for (var i = 0; i < length; i++) {
+        currSize = length - i;
+        swapIdx = currSize - 1;
+        idx = ~~(Math.random() * currSize);
+        item = output[idx];
+        output[idx] = output[swapIdx];
+        output[swapIdx] = item;
+    }
 
-  },
-
-  unsortInplace: function(input) {
-
-    validateInput(input);
-    return(_unsort(input, true));
-
-  }
-
+    return output;
 }
 
-
-function _unsort(input, inPlace) {
-
-  var length = input.length;
-  var output = inPlace ? input : input.slice();
-  var currSize;
-  var swapIdx;
-  var idx;
-  var item;
-
-  // Fisher-Yates shuffle
-  for (var i = 0; i < length; i++) {
-
-    currSize = length - i;
-    swapIdx = currSize - 1;
-    idx = ~~(Math.random() * currSize);
-    item = output[idx];
-    output[idx] = output[swapIdx];
-    output[swapIdx] = item;
-
-  }
-
-  return output;
-
-}
-
-
-function validateInput(input) {
-
-  if (!input) {
-    throw new ReferenceError('Missing input argument');
-  }
-
-  if (Array.isArray(input) === false) {
-    throw new TypeError('Argument is not an array')
-  }
-
+function _validate(input) {
+    if (!input) {
+        throw new ReferenceError('Missing input argument');
+    } else if (Array.isArray(input) === false) {
+        throw new TypeError('Argument is not an array');
+    }
 }

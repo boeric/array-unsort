@@ -1,3 +1,6 @@
+0.1.2
+- Code and test cleanup
+
 0.1.1
 - Readme edits
 
