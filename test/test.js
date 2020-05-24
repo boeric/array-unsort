@@ -1,177 +1,165 @@
-"use strict";
-/* global describe, before, it, expect */
+/* eslint-disable no-plusplus, no-nested-ternary */
+/* global assert, before, describe, expect, it */
 
-var unsort = require("../src/index.js").unsort;
-var unsortInplace = require("../src/index.js").unsortInplace;
-var d3 = require("d3");
+const { unsort, unsortInplace } = require('../src/index.js');
 
-var input;
-var result;
+let input;
+let result;
 
+function range(length) {
+  if (length < 1) {
+    throw new Error(`Invalid array length: ${length}`);
+  }
 
-describe("Output consistency", function() {
+  const arr = [];
+  for (let i = 0; i < length; i++) {
+    arr.push(i);
+  }
+  return arr;
+}
 
-  describe("Array length", function() {
-    input = d3.range(10);
+describe('Output consistency', () => {
+  describe('Array length', () => {
+    input = range(10);
 
-    before(function() {
+    before(() => {
       result = unsort(input);
     });
 
-    it("should return an array of the same size", function() {
+    it('should return an array of the same size', () => {
       expect(result.length).equal(input.length);
     });
-
   });
 
-  describe("Empty input array", function() {
-
-    before(function() {
+  describe('Empty input array', () => {
+    before(() => {
       result = unsort([]);
     });
 
-    it("should return an empty array", function() {
+    it('should return an empty array', () => {
       expect(result.length).equal(0);
     });
-
   });
 
-  describe("One element array", function() {
-
-    before(function() {
+  describe('One element array', () => {
+    before(() => {
       result = unsort([10]);
     });
 
-    it("should return a one element array", function() {
+    it('should return a one element array', () => {
       expect(result.length).equal(1);
     });
 
-    it("should return the correct value", function() {
+    it('should return the correct value', () => {
       expect(result[0]).equal(10);
     });
-
   });
 
-  describe("Array elements", function() {
-    input = d3.range(1000);
+  describe('Array elements', () => {
+    input = range(1000);
 
-    before(function() {
+    before(() => {
       result = unsort(input);
     });
 
     function verifyItems(_) {
-      var map = {};
+      const map = {};
 
-      _.forEach(function(d) {
-        if (map[d] == undefined) map[d] = 0;
+      _.forEach((d) => {
+        if (map[d] === undefined) map[d] = 0;
         map[d]++;
       });
 
-      return Object.keys(map).every(function(d, i) {
-        return map[+d] === 1;
-      });
+      return Object.keys(map).every((d) => map[+d] === 1);
     }
 
-    it("should return an array with all input items", function() {
+    it('should return an array with all input items', () => {
       assert.strictEqual(true, verifyItems(result));
     });
-
   });
-
 });
 
+describe('In-place vs. not in-place unsort', () => {
+  describe('In-place unsort', () => {
+    input = range(1000);
 
-describe("In-place vs. not in-place unsort", function() {
-
-  describe("In-place unsort", function() {
-    input = d3.range(1000);
-
-    before(function() {
+    before(() => {
       result = unsortInplace(input);
     });
 
-    function validateEqual(_1, _2) {
-      return _1 === _2;
+    function validateEqual(a, b) {
+      return a === b;
     }
 
-    it("should unsort the array in-place (should not create new array object", function() {
+    it('should unsort the array in-place (should not create new array object', () => {
       assert.deepEqual(true, validateEqual(input, result));
     });
-
   });
 
-  describe("Not in-place unsort", function() {
-    input = d3.range(1000);
+  describe('Not in-place unsort', () => {
+    input = range(1000);
 
-    before(function() {
+    before(() => {
       result = unsort(input);
     });
 
-    function validateNotEqual(_1, _2) {
-      return _1 != _2;
+    function validateNotEqual(a, b) {
+      return a !== b;
     }
 
-    it("should unsort the array not in-place (should create new array object)", function() {
+    it('should unsort the array not in-place (should create new array object)', () => {
       assert.deepEqual(true, validateNotEqual(input, result));
     });
-
   });
-
 });
 
-
-describe("Algorithm", function() {
-
-  describe("Probability distribution of sorted indexes (500K unsort iterations)", function() {
-
+describe('Algorithm', () => {
+  describe('Probability distribution of sorted indexes (500K unsort iterations)', () => {
     function validateRandom() {
+      const iterations = 400000;
+      const length = 5;
+      const map = {};
+      const threshold = 0.002;
 
-      var iterations = 400000;
-      var length = 5;
-      var map = {};
-      var threshold = 0.002;
-
-      // init map
-      d3.range(length).forEach(function(i) {
-        var obj = {};
-        d3.range(length).forEach(function(j) {
-          obj["pos" + j] = 0;
+      // Init map
+      range(length).forEach((i) => {
+        const obj = {};
+        range(length).forEach((j) => {
+          obj[`pos${j}`] = 0;
         });
-        map["index" + i] = obj;
+        map[`index${i}`] = obj;
       });
 
-      // iterate and update map
-      d3.range(iterations).forEach(function() {
-        var arr = d3.range(length);
+      // Iterate and update map
+      range(iterations).forEach(() => {
+        const arr = range(length);
         unsortInplace(arr);
-        arr.forEach(function(i, j) {
-          map["index" + i]["pos" + j]++;
+        arr.forEach((i, j) => {
+          map[`index${i}`][`pos${j}`]++;
         });
       });
 
-      // done iterating, now inspect map
-      var max = -Infinity;
-      var min = Infinity;
-      Object.keys(map).forEach(function(key) {
-        Object.keys(map[key]).forEach(function(pos) {
-          var value = map[key][pos];
-          var pct = value / iterations;
+      // Done iterating, now inspect map
+      let max = -Infinity;
+      let min = Infinity;
+      Object.keys(map).forEach((key) => {
+        Object.keys(map[key]).forEach((pos) => {
+          const value = map[key][pos];
+          const pct = value / iterations;
           if (pct < min) min = pct;
           if (pct > max) max = pct;
         });
       });
 
-      var expected = 1 / length;
-      var maxDiff = max - expected;
-      var minDiff = expected - min;
+      const expected = 1 / length;
+      const maxDiff = max - expected;
+      const minDiff = expected - min;
 
-      return maxDiff < threshold ? true : minDiff < threshold ? true : false;
+      return maxDiff < threshold || minDiff < threshold || false;
     }
 
-    it ("should generate random output index for each input index", function() {
+    it('should generate random output index for each input index', () => {
       assert.deepEqual(true, validateRandom());
     });
-
   });
-
 });
