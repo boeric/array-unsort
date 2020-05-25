@@ -1,10 +1,8 @@
 /* eslint-disable no-plusplus, no-nested-ternary */
 /* global assert, before, describe, expect, it */
 
+const { FISHER_YATES, UNIQUE_IDX } = require('../src/constants.js');
 const { unsort, unsortInplace } = require('../src/index.js');
-
-let input;
-let result;
 
 function range(length) {
   if (length < 1) {
@@ -20,10 +18,11 @@ function range(length) {
 
 describe('Output consistency', () => {
   describe('Array length', () => {
-    input = range(10);
+    const input = range(10);
+    let result;
 
     before(() => {
-      result = unsort(input);
+      result = unsort(input, FISHER_YATES);
     });
 
     it('should return an array of the same size', () => {
@@ -32,6 +31,8 @@ describe('Output consistency', () => {
   });
 
   describe('Empty input array', () => {
+    let result;
+
     before(() => {
       result = unsort([]);
     });
@@ -42,6 +43,8 @@ describe('Output consistency', () => {
   });
 
   describe('One element array', () => {
+    let result;
+
     before(() => {
       result = unsort([10]);
     });
@@ -56,7 +59,8 @@ describe('Output consistency', () => {
   });
 
   describe('Array elements', () => {
-    input = range(100);
+    const input = range(100);
+    let result;
 
     before(() => {
       result = unsort(input);
@@ -81,7 +85,8 @@ describe('Output consistency', () => {
 
 describe('In-place vs. not in-place unsort', () => {
   describe('In-place unsort', () => {
-    input = range(10);
+    const input = range(10);
+    let result;
 
     before(() => {
       result = unsortInplace(input);
@@ -97,7 +102,8 @@ describe('In-place vs. not in-place unsort', () => {
   });
 
   describe('Not in-place unsort', () => {
-    input = range(10);
+    const input = range(10);
+    let result;
 
     before(() => {
       result = unsort(input);
@@ -114,12 +120,17 @@ describe('In-place vs. not in-place unsort', () => {
 });
 
 describe('Algorithm', () => {
-  describe('Probability distribution of sorted indexes (400K unsort iterations), fisher-yates', () => {
+  describe('Uniform distribution of sorted indexes (100K unsort iterations), fisher-yates', () => {
     function validateRandom() {
-      const iterations = 400000;
+      const iterations = 10000;
       const length = 5;
       const map = {};
-      const threshold = 0.002;
+      // To test for true randomness is complicated (https://en.wikipedia.org/wiki/Diehard_tests)
+      // Can't do that here, so we're using something very simplified, perhaps incorrect...
+      const threshold = 0.003;
+      const threshold2 = Math.log(iterations) / 10 / length;
+      const threshold3 = Math.log(iterations) / Math.LOG10E;
+      const threshold4 = Math.LOG10E / Math.log(iterations);
 
       // Init map
       range(length).forEach((i) => {
@@ -133,28 +144,35 @@ describe('Algorithm', () => {
       // Iterate and update map
       range(iterations).forEach(() => {
         const arr = range(length);
-        unsortInplace(arr, 'fisher-yates');
+        unsortInplace(arr, FISHER_YATES);
         arr.forEach((i, j) => {
           map[`index${i}`][`pos${j}`]++;
         });
       });
 
-      // Done iterating, now inspect map
+      // Process map and determine the array elems with highest (max) and lowest (min) frequency
       let max = -Infinity;
       let min = Infinity;
       Object.keys(map).forEach((key) => {
         Object.keys(map[key]).forEach((pos) => {
-          const value = map[key][pos];
-          const pct = value / iterations;
+          const count = map[key][pos];
+          const pct = count / iterations;
           if (pct < min) min = pct;
           if (pct > max) max = pct;
         });
       });
 
+      // Determine the expected frequency
       const expected = 1 / length;
+
+      // Determine the difference between the expected frequency and the max/min numbers found
       const maxDiff = max - expected;
       const minDiff = expected - min;
-      return maxDiff < threshold || minDiff < threshold || false;
+      // console.log(maxDiff, minDiff, threshold, maxDiff - minDiff);
+      console.log(max, min, max - min, threshold, threshold2, threshold3, threshold4);
+      console.log('map', map)
+
+      return (maxDiff < threshold && minDiff < threshold) || false;
     }
 
     it('should generate random output index for each input index', () => {
@@ -162,9 +180,9 @@ describe('Algorithm', () => {
     });
   });
 
-  describe('Ensure unique positions (400K unsort iterations)', () => {
+  describe('Ensure unique new elem positions (100K unsort iterations), unique-idx', () => {
     function validateUniqueIdx() {
-      const iterations = 400000;
+      const iterations = 100000;
       const length = 5;
       const map = {};
 
@@ -180,13 +198,13 @@ describe('Algorithm', () => {
       // Iterate and update map
       range(iterations).forEach(() => {
         const arr = range(length);
-        unsortInplace(arr, 'unique-idx');
+        unsortInplace(arr, UNIQUE_IDX);
         arr.forEach((i, j) => {
           map[`index${i}`][`pos${j}`]++;
         });
       });
 
-      // Done iterating, now inspect map
+      // Inspect map
       let idx = 0;
       // eslint-disable-next-line no-restricted-syntax, guard-for-in
       for (const key in map) {

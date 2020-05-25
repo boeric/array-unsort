@@ -7,8 +7,7 @@
  * By: Bo Ericsson (https://github.com/boeric)
  */
 
-const UNIQUE_IDX = 'unique-idx';
-const FISHER_YATES = 'fisher-yates';
+const { FISHER_YATES, UNIQUE_IDX } = require('./constants.js');
 
 function unsort(output, type) {
   const { length } = output;
@@ -81,12 +80,12 @@ function validateType(type) {
 }
 
 module.exports = {
-  unsort: (input, type = UNIQUE_IDX) => {
+  unsort: (input, type = FISHER_YATES) => {
     validateArray(input);
     validateType(type);
     return unsort(input.slice(), type);
   },
-  unsortInplace: (input, type = UNIQUE_IDX) => {
+  unsortInplace: (input, type = FISHER_YATES) => {
     validateArray(input);
     validateType(type);
     return unsort(input, type);
