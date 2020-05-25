@@ -19,7 +19,7 @@
   "license": "MIT",
   "dependencies": {},
   "devDependencies": {
-    "chai": "^3.5.0",
-    "mocha": "^2.5.3"
+    "chai": "latest",
+    "mocha": "latest"
   }
 }
