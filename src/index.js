@@ -1,44 +1,94 @@
-'use strict';
+/* eslint-disable no-bitwise, no-param-reassign, no-plusplus */
 
-/*
+/**
  * array-unsort
+ * Version: 1.0.0
+ * Purpose: Unsorts (shuffles) an arbitrary array
+ * By: Bo Ericsson (https://github.com/boeric)
  */
 
+const UNIQUE_IDX = 'unique-idx';
+const FISHER_YATES = 'fisher-yates';
+
+function unsort(output, type) {
+  const { length } = output;
+  const input = output.slice(0);
+
+  // Edge case where the array is either empty or contains one element
+  if (length <= 2) {
+    return input;
+  }
+
+  if (type === UNIQUE_IDX) {
+    // This shuffling guarantees that no array elem will maintain it's old array position.
+    // Please note that this algorithm will place the first elem in the last position,
+    // while all other array elems are placed randomly with no elem retaining it's original
+    // array position
+    for (let destIdx = 0; destIdx <= length - 2; destIdx++) {
+      // Compute source position (the index of the array where the elem will be moved from)
+      const sourceIdx = ~~(Math.random() * (length - destIdx - 1)) + destIdx + 1;
+
+      // Obtain the array elem to be moved, and remove it from the array
+      const movedValue = output.splice(sourceIdx, 1)[0];
+
+      // Insert the moved elem at the destination position
+      output.splice(destIdx, 0, movedValue);
+
+      // Check if the array elem is in the same position as in the input array
+      if (output[destIdx] === input[destIdx]) {
+        // If so, swap the elem with the prior elem
+        const swapValue = output[destIdx - 1];
+        output[destIdx] = swapValue;
+        output[destIdx - 1] = movedValue;
+      }
+    }
+  } else {
+    // Fisher-Yates shuffle (https://en.wikipedia.org/wiki/Fisher%E2%80%93Yates_shuffle)
+    for (let i = 0; i < length; i++) {
+      // Determine the remaining length
+      const currLength = length - i;
+
+      // Determine the source position (the index of the array where the elem will be swapped from)
+      const sourceIdx = currLength - 1;
+
+      // Determine the desitination position
+      const destIdx = ~~(Math.random() * currLength);
+
+      // Swap the values at the source and destination positions
+      const swapValue = output[destIdx];
+      output[destIdx] = output[sourceIdx];
+      output[sourceIdx] = swapValue;
+    }
+  }
+
+  // Return the unsorted (shuffled) array
+  return output;
+}
+
+
+function validateArray(input) {
+  if (!input) {
+    throw new ReferenceError('Missing input argument');
+  } else if (Array.isArray(input) === false) {
+    throw new TypeError('Argument is not an array');
+  }
+}
+
+function validateType(type) {
+  if (![UNIQUE_IDX, FISHER_YATES].includes(type)) {
+    throw new ReferenceError(`Invalid type argument: ${type}`);
+  }
+}
+
 module.exports = {
-    unsort: function(input) {
-        _validate(input);
-        return(_unsort(input, input.slice()));
-    },
-    unsortInplace: function(input) {
-        _validate(input);
-        return(_unsort(input, input));
-    }
+  unsort: (input, type = UNIQUE_IDX) => {
+    validateArray(input);
+    validateType(type);
+    return unsort(input.slice(), type);
+  },
+  unsortInplace: (input, type = UNIQUE_IDX) => {
+    validateArray(input);
+    validateType(type);
+    return unsort(input, type);
+  },
 };
-
-function _unsort(input, output) {
-    var length = input.length;
-    var currSize;
-    var swapIdx;
-    var idx;
-    var item;
-
-    // Fisher-Yates shuffle
-    for (var i = 0; i < length; i++) {
-        currSize = length - i;
-        swapIdx = currSize - 1;
-        idx = ~~(Math.random() * currSize);
-        item = output[idx];
-        output[idx] = output[swapIdx];
-        output[swapIdx] = item;
-    }
-
-    return output;
-}
-
-function _validate(input) {
-    if (!input) {
-        throw new ReferenceError('Missing input argument');
-    } else if (Array.isArray(input) === false) {
-        throw new TypeError('Argument is not an array');
-    }
-}

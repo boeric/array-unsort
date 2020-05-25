@@ -56,7 +56,7 @@ describe('Output consistency', () => {
   });
 
   describe('Array elements', () => {
-    input = range(1000);
+    input = range(100);
 
     before(() => {
       result = unsort(input);
@@ -81,7 +81,7 @@ describe('Output consistency', () => {
 
 describe('In-place vs. not in-place unsort', () => {
   describe('In-place unsort', () => {
-    input = range(1000);
+    input = range(10);
 
     before(() => {
       result = unsortInplace(input);
@@ -97,7 +97,7 @@ describe('In-place vs. not in-place unsort', () => {
   });
 
   describe('Not in-place unsort', () => {
-    input = range(1000);
+    input = range(10);
 
     before(() => {
       result = unsort(input);
@@ -114,7 +114,7 @@ describe('In-place vs. not in-place unsort', () => {
 });
 
 describe('Algorithm', () => {
-  describe('Probability distribution of sorted indexes (500K unsort iterations)', () => {
+  describe('Probability distribution of sorted indexes (400K unsort iterations), fisher-yates', () => {
     function validateRandom() {
       const iterations = 400000;
       const length = 5;
@@ -133,7 +133,7 @@ describe('Algorithm', () => {
       // Iterate and update map
       range(iterations).forEach(() => {
         const arr = range(length);
-        unsortInplace(arr);
+        unsortInplace(arr, 'fisher-yates');
         arr.forEach((i, j) => {
           map[`index${i}`][`pos${j}`]++;
         });
@@ -154,12 +154,53 @@ describe('Algorithm', () => {
       const expected = 1 / length;
       const maxDiff = max - expected;
       const minDiff = expected - min;
-
       return maxDiff < threshold || minDiff < threshold || false;
     }
 
     it('should generate random output index for each input index', () => {
       assert.deepEqual(true, validateRandom());
+    });
+  });
+
+  describe('Ensure unique positions (400K unsort iterations)', () => {
+    function validateUniqueIdx() {
+      const iterations = 400000;
+      const length = 5;
+      const map = {};
+
+      // Init map
+      range(length).forEach((i) => {
+        const obj = {};
+        range(length).forEach((j) => {
+          obj[`pos${j}`] = 0;
+        });
+        map[`index${i}`] = obj;
+      });
+
+      // Iterate and update map
+      range(iterations).forEach(() => {
+        const arr = range(length);
+        unsortInplace(arr, 'unique-idx');
+        arr.forEach((i, j) => {
+          map[`index${i}`][`pos${j}`]++;
+        });
+      });
+
+      // Done iterating, now inspect map
+      let idx = 0;
+      // eslint-disable-next-line no-restricted-syntax, guard-for-in
+      for (const key in map) {
+        if (map[key][`pos${idx}`] !== 0) {
+          return false;
+        }
+        idx++;
+      }
+
+      return true;
+    }
+
+    it('should unsort the array and ensure that no value remain in the same position', () => {
+      assert.deepEqual(true, validateUniqueIdx());
     });
   });
 });
