@@ -1,4 +1,4 @@
-/* eslint-disable no-plusplus, no-nested-ternary */
+/* eslint-disable no-plusplus, no-nested-ternary, no-multi-spaces, key-spacing */
 /* global assert, before, describe, expect, it */
 
 const { FISHER_YATES, UNIQUE_IDX } = require('../src/constants.js');
@@ -120,14 +120,14 @@ describe('In-place vs. not in-place unsort', () => {
 });
 
 describe('Algorithm', () => {
-  describe('Uniform distribution of sorted indexes (100K unsort iterations), fisher-yates', () => {
+  describe('Uniform distribution of unsorted array (Fisher-Yates)', () => {
     function validateRandom() {
       const iterations = 10000;
-      const length = 5;
+      const length = 10;
       const map = {};
       // To test for true randomness is complicated (https://en.wikipedia.org/wiki/Diehard_tests)
       // Can't do that here, so we're using something very simplified
-      const threshold = 0.03;
+      const tolerance = 0.03;
 
       // Init map
       range(length).forEach((i) => {
@@ -160,9 +160,15 @@ describe('Algorithm', () => {
       });
 
       // With an array length of x, the count of each bin should approach 1 / x for a random
-      // distribution as the iteration count increases. Here we're accepting a frequency
-      // difference of 3 percent for 10k iterations.
-      return Math.abs(freqMax - freqMin) < threshold;
+      // distribution as the iteration count increases
+
+      // Test whether the frequency range is within the tolerance
+      const diff = Math.abs(freqMax - freqMin);
+      if (diff > tolerance) {
+        return false;
+      }
+
+      return true;
     }
 
     it('should generate random output index for each input index', () => {
@@ -170,10 +176,8 @@ describe('Algorithm', () => {
     });
   });
 
-  describe('Ensure unique new elem positions (100K unsort iterations), unique-idx', () => {
-    function validateUniqueIdx() {
-      const iterations = 100000;
-      const length = 5;
+  describe('Ensure random distribution with no array element in its original position (modified Fisher-Yates)', () => {
+    function validateUniqueIdx(iterations, length, tolerance) {
       const map = {};
 
       // Init map
@@ -194,7 +198,7 @@ describe('Algorithm', () => {
         });
       });
 
-      // Inspect map
+      // Inspect map to verify that no element remains in it's original position
       let idx = 0;
       // eslint-disable-next-line no-restricted-syntax, guard-for-in
       for (const key in map) {
@@ -204,11 +208,61 @@ describe('Algorithm', () => {
         idx++;
       }
 
+      // Process map and determine the array elems with highest (max) and lowest (min) frequency
+      let freqMax = -Infinity;
+      let freqMin = Infinity;
+      Object.keys(map).forEach((key, i) => {
+        Object.keys(map[key]).forEach((pos, j) => {
+          if (i !== j) {
+            const count = map[key][pos];
+            const freq = count / iterations;
+            freqMin = (freq < freqMin) ? freq : freqMin;
+            freqMax = (freq > freqMax) ? freq : freqMax;
+          }
+        });
+      });
+
+      // With an array length of x, the count of each bin should approach 1 / (x - 1) for a
+      // random distribution as the iteration count increases
+
+      // Test whether the frequency range is within the tolerance
+      const diff = Math.abs(freqMax - freqMin);
+      if (diff > tolerance) {
+        return false;
+      }
+
       return true;
     }
 
-    it('should unsort the array and ensure that no value remain in the same position', () => {
-      assert.deepEqual(true, validateUniqueIdx());
+    function getDescription(iterations, length, tolerance) {
+      const str = 'should produce correct result';
+      return `${str} (iterations: ${iterations}, length: ${length}, tolerance: ${tolerance})`;
+    }
+
+    function executeTest(iterations, length, tolerance, description) {
+      it(description, () => {
+        assert.deepEqual(true, validateUniqueIdx(iterations, length, tolerance));
+      });
+    }
+
+    // Define tests
+    const tests = [
+      { iterations:     1, length:  2, tolerance: 0.000 },
+      { iterations: 10000, length:  3, tolerance: 0.015 },
+      { iterations: 10000, length:  4, tolerance: 0.060 }, // Algoritmic anomaly here
+      { iterations: 10000, length:  5, tolerance: 0.030 },
+      { iterations: 10000, length:  6, tolerance: 0.030 },
+      { iterations: 10000, length:  7, tolerance: 0.030 },
+      { iterations: 10000, length:  8, tolerance: 0.030 },
+      { iterations: 10000, length: 10, tolerance: 0.030 },
+      { iterations: 10000, length: 20, tolerance: 0.030 },
+    ];
+
+    // Run the tests
+    tests.forEach((d) => {
+      const { iterations, length, tolerance } = d;
+      const description = getDescription(iterations, length, tolerance);
+      executeTest(iterations, length, tolerance, description);
     });
   });
 });
