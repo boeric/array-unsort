@@ -8,13 +8,16 @@ Two algorithms are available:
 - **Fisher-Yates**
 - **Modified Fisher-Yates**, which guarantees that no array element remain at the same index after shuffling
 
+
 **Fisher-Yates Usage**
 
-`array-unsort.unsort(array);` or equivalently `array-unsort.unsort(array, 'fisher-yates);`
+`unsort(array);` or equivalently `unsort(array, 'fisher-yates);`
+
 
 **Modified Fisher-Yates Usage** 
 
-`array-unsort.unsort(array, 'unique-idx');`
+`unsort(array, 'unique-idx');`
+
 
 ### Installation
 
@@ -38,8 +41,8 @@ console.log('unsorted1', unsorted1); // eg [ 0, 1, 3, 2 ]
 const unsorted2 = unsort(input2, 'fisher-yates');
 console.log('unsorted2', unsorted2); // eg [ 'b', 'a', 'z' ]
 
-// Example 2: Modified Fisher-Yates that guarantees that no element remains at the
-// same index after shuffling
+// Example 2: Modified Fisher-Yates that guarantees that all elements are at
+// new indexes after shuffling
 
 const unsortedUnique1 = unsort(input1, 'unique-idx');
 console.log('unsortedUnique1', unsortedUnique1); // eg: [ 2, 3, 1, 0 ]
