@@ -1,47 +1,54 @@
-/* eslint-disable no-bitwise, no-param-reassign, no-plusplus */
+/* eslint-disable no-bitwise, no-param-reassign, no-plusplus, prefer-destructuring, no-console
+   padded-blocks */
 
 /**
  * array-unsort
  * Version: 1.0.0
  * Purpose: Unsorts (shuffles) an arbitrary array
+ * Modes: In-place unsort, or new unsorted array
+ * Algorithms:
+ *   - Fisher-Yates
+ *   - Modified Fisher-Yates (which guarantees that no array elements remain at the
+ *     same index after shuffling)
  * By: Bo Ericsson (https://github.com/boeric)
  */
 
 const { FISHER_YATES, UNIQUE_IDX } = require('./constants.js');
 
-function unsort(output, type) {
-  const { length } = output;
-  const input = output.slice(0);
-
-  // Edge case where the array is either empty or contains one element
-  if (length <= 2) {
-    return input;
+// Generate array with each array element equal to it's index
+function range(length) {
+  if (length < 1) {
+    throw new Error(`Invalid array length: ${length}`);
   }
 
-  if (type === UNIQUE_IDX) {
-    // This shuffling guarantees that no array elem will maintain it's old array position.
-    // Please note that this algorithm will place the first elem in the last position,
-    // while all other array elems are placed randomly with no elem retaining it's original
-    // array position
-    for (let destIdx = 0; destIdx <= length - 2; destIdx++) {
-      // Compute source position (the index of the array where the elem will be moved from)
-      const sourceIdx = ~~(Math.random() * (length - destIdx - 1)) + destIdx + 1;
+  const a = [];
+  for (let i = 0; i < length; i++) {
+    a.push(i);
+  }
+  return a;
+}
 
-      // Obtain the array elem to be moved, and remove it from the array
-      const movedValue = output.splice(sourceIdx, 1)[0];
+// Unsort the output array either using Fisher-Yates or using modified Fisher-Yates, the latter
+// guarantees that no array element will remain in its original position after unsort
+function unsort(output, type) {
+  const { length } = output;
+  let swapIdx;
+  let swapValue;
 
-      // Insert the moved elem at the destination position
-      output.splice(destIdx, 0, movedValue);
+  // Deal with edge cases
+  switch (length) {
+    case 0:
+    case 1:
+      return output;
+    case 2:
+      swapIdx = output[0];
+      output[0] = output[1];
+      output[1] = swapIdx;
+      return output;
+    default:
+  }
 
-      // Check if the array elem is in the same position as in the input array
-      if (output[destIdx] === input[destIdx]) {
-        // If so, swap the elem with the prior elem
-        const swapValue = output[destIdx - 1];
-        output[destIdx] = swapValue;
-        output[destIdx - 1] = movedValue;
-      }
-    }
-  } else {
+  if (type === FISHER_YATES) {
     // Fisher-Yates shuffle (https://en.wikipedia.org/wiki/Fisher%E2%80%93Yates_shuffle)
     for (let i = 0; i < length; i++) {
       // Determine the remaining length
@@ -50,20 +57,81 @@ function unsort(output, type) {
       // Determine the source position (the index of the array where the elem will be swapped from)
       const sourceIdx = currLength - 1;
 
-      // Determine the desitination position
+      // Determine the destination position
       const destIdx = ~~(Math.random() * currLength);
+      // console.log('&&', i, sourceIdx, destIdx)
 
       // Swap the values at the source and destination positions
-      const swapValue = output[destIdx];
+      swapValue = output[destIdx];
       output[destIdx] = output[sourceIdx];
       output[sourceIdx] = swapValue;
     }
+  } else if (type === UNIQUE_IDX) {
+    // Modified Fisher-Yates shuffle
+    const indexes = range(length).reverse();
+
+    // Single pass through the indexed array using Fischer-Yates
+    for (let i = 0; i < length; i++) {
+      // Determine the remaining length
+      const currLength = length - i;
+
+      // Compute source
+      const sourceIdx = currLength - 1;
+
+      // Generate random destination
+      const destIdx = ~~(Math.random() * currLength);
+
+      // Swap the indexes at the source and destination
+      swapIdx = indexes[destIdx];
+      indexes[destIdx] = indexes[sourceIdx];
+      indexes[sourceIdx] = swapIdx;
+    }
+
+    // Determine which indexes did not move during the shuffling process
+    const invalidPositions = [];
+    indexes.forEach((d, i) => {
+      if (d === i) {
+        invalidPositions.push(d);
+      }
+    });
+
+    // Grab the last value from the invalid array, if the array has odd length
+    const single = invalidPositions.length % 2 === 1
+      ? invalidPositions.pop()
+      : undefined;
+
+    // Generate pairs of remaining invalid indexes
+    const pairs = [];
+    for (let i = 0; i < invalidPositions.length - 1; i += 2) {
+      pairs.push([invalidPositions[i], invalidPositions[i + 1]]);
+    }
+
+    // Swap the indexes of each pair
+    pairs.forEach((pair) => {
+      const [a, b] = pair;
+      indexes[a] = b;
+      indexes[b] = a;
+    });
+
+    // Process the single invalid index
+    if (single !== undefined) {
+      // Generate a random index to use for swapping the single invalid index
+      swapIdx = ~~(Math.random() * (indexes.length - 1)) + single + 1;
+      swapIdx %= indexes.length;
+
+      indexes[single] = indexes[swapIdx];
+      indexes[swapIdx] = single;
+    }
+
+    // Refill the output array using the random indexes just generated
+    const tempOutput = output.slice();
+    output.length = 0;
+    indexes.forEach((d) => output.push(tempOutput[d]));
   }
 
   // Return the unsorted (shuffled) array
   return output;
 }
-
 
 function validateArray(input) {
   if (!input) {
