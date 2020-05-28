@@ -1,8 +1,11 @@
 /* eslint-disable no-plusplus, no-nested-ternary, no-multi-spaces, key-spacing */
 /* global assert, before, describe, expect, it */
 
-const { FISHER_YATES, UNIQUE_IDX } = require('../src/constants.js');
+
 const { unsort, unsortInplace } = require('../src/index.js');
+
+const FISHER_YATES = 'fisher-yates';
+const UNIQUE_IDX = 'unique-idx';
 
 function range(length) {
   if (length < 1) {

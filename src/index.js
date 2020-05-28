@@ -10,10 +10,11 @@
  *   - Fisher-Yates
  *   - Modified Fisher-Yates (which guarantees that no array elements remain at the
  *     same index after shuffling)
- * By: Bo Ericsson (https://github.com/boeric)
+ * Copyright: Bo Ericsson 2020
  */
 
-const { FISHER_YATES, UNIQUE_IDX } = require('./constants.js');
+const FISHER_YATES = 'fisher-yates';
+const UNIQUE_IDX = 'unique-idx';
 
 // Generate array with each array element equal to it's index
 function range(length) {
