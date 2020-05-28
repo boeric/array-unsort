@@ -13,7 +13,11 @@
   "keywords": [
     "array",
     "unsort",
-    "shuffle"
+    "shuffle",
+    "fisher-yates",
+    "deep shuffle",
+    "random",
+    "new index",
   ],
   "author": "Bo Ericsson <bo@boe.net> (http://www.github.com/boeric)",
   "license": "MIT",
