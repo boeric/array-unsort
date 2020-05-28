@@ -251,14 +251,14 @@ describe('Algorithm', () => {
     // Define tests
     const tests = [
       { iterations:     1, length:  2, tolerance: 0.000 },
-      { iterations: 10000, length:  3, tolerance: 0.015 },
+      { iterations: 10000, length:  3, tolerance: 0.025 },
       { iterations: 10000, length:  4, tolerance: 0.060 }, // Algoritmic anomaly here
-      { iterations: 10000, length:  5, tolerance: 0.030 },
-      { iterations: 10000, length:  6, tolerance: 0.030 },
-      { iterations: 10000, length:  7, tolerance: 0.030 },
-      { iterations: 10000, length:  8, tolerance: 0.030 },
-      { iterations: 10000, length: 10, tolerance: 0.030 },
-      { iterations: 10000, length: 20, tolerance: 0.030 },
+      { iterations: 10000, length:  5, tolerance: 0.060 },
+      { iterations: 10000, length:  6, tolerance: 0.040 },
+      { iterations: 10000, length:  7, tolerance: 0.040 },
+      { iterations: 10000, length:  8, tolerance: 0.040 },
+      { iterations: 10000, length: 10, tolerance: 0.040 },
+      { iterations: 10000, length: 20, tolerance: 0.040 },
     ];
 
     // Run the tests
