@@ -1,10 +1,10 @@
 ## Unsort/shuffle an arbitrary array
 
-The **`unsort`** method unsorts (shuffles) and returns a copy of the input array. 
+The **`unsort`** method unsorts (shuffles) and returns a copy of the input array.
 
 The **`unsortInplace`** method unsorts the input array in-place.
 
-Two algorithms are available: 
+Two algorithms are available:
 - **Fisher-Yates**
 - **Modified Fisher-Yates**, which guarantees that no array element remain at the same index after shuffling
 
@@ -14,11 +14,11 @@ Two algorithms are available:
 `unsort(array);` or equivalently `unsort(array, 'fisher-yates);`
 
 
-**Modified Fisher-Yates Usage** 
+**Modified Fisher-Yates Usage**
 
 `unsort(array, 'unique-idx');`
 
-**Demo**
+### Demo
 
 The module is alive (here)[https://bl.ocks.org/boeric/35eec347e240c6e41ebe04d85e28de9d]. The gist is (here)[https://gist.github.com/boeric/35eec347e240c6e41ebe04d85e28de9d]
 
