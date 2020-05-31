@@ -3,7 +3,7 @@
 
 /**
  * array-unsort
- * Version: 1.0.2
+ * Version: 1.1.0
  * Purpose: Unsorts (shuffles) an arbitrary array
  * Modes: In-place unsort, or new unsorted array
  * Algorithms:
@@ -14,7 +14,7 @@
  */
 
 (function (exports) {
-  const version = '1.0.2';
+  const version = '1.1.0';
   const FISHER_YATES = 'fisher-yates';
   const UNIQUE_IDX = 'unique-idx';
 
@@ -38,102 +38,140 @@
     let swapIdx;
     let swapValue;
 
-    // Deal with edge cases
+    // Short circuit for array length edge cases 0, 1 and 2
     switch (length) {
       case 0:
       case 1:
+        // Just return the array of 0 or 1 elements
         return output;
       case 2:
+        // Swap the two elements
         swapIdx = output[0];
         output[0] = output[1];
         output[1] = swapIdx;
+
+        // Returned the shuffled array
         return output;
       default:
     }
 
-    if (type === FISHER_YATES) {
-      // Fisher-Yates shuffle (https://en.wikipedia.org/wiki/Fisher%E2%80%93Yates_shuffle)
-      for (let i = 0; i < length; i++) {
-        // Determine the remaining length
-        const currLength = length - i;
+    switch (type) {
+      case FISHER_YATES: {
+        // Fisher-Yates shuffle (https://en.wikipedia.org/wiki/Fisher%E2%80%93Yates_shuffle)
+        for (let i = 0; i < length; i++) {
+          // Determine the remaining length
+          const currLength = length - i;
 
-        // Determine the source position (the index of the array where the elem will be
-        // swapped from)
-        const sourceIdx = currLength - 1;
+          // Determine the source position (the index of the array where the elem will be
+          // swapped from)
+          const sourceIdx = currLength - 1;
 
-        // Determine the destination position
-        const destIdx = ~~(Math.random() * currLength);
-        // console.log('&&', i, sourceIdx, destIdx)
+          // Determine the destination position
+          const destIdx = ~~(Math.random() * currLength);
 
-        // Swap the values at the source and destination positions
-        swapValue = output[destIdx];
-        output[destIdx] = output[sourceIdx];
-        output[sourceIdx] = swapValue;
-      }
-    } else if (type === UNIQUE_IDX) {
-      // Modified Fisher-Yates shuffle
-      const indexes = range(length).reverse();
-
-      // Single pass through the indexed array using Fischer-Yates
-      for (let i = 0; i < length; i++) {
-        // Determine the remaining length
-        const currLength = length - i;
-
-        // Compute source
-        const sourceIdx = currLength - 1;
-
-        // Generate random destination
-        const destIdx = ~~(Math.random() * currLength);
-
-        // Swap the indexes at the source and destination
-        swapIdx = indexes[destIdx];
-        indexes[destIdx] = indexes[sourceIdx];
-        indexes[sourceIdx] = swapIdx;
-      }
-
-      // Determine which indexes did not move during the shuffling process
-      const invalidPositions = [];
-      indexes.forEach((d, i) => {
-        if (d === i) {
-          invalidPositions.push(d);
+          // Swap the values at the source and destination positions
+          swapValue = output[destIdx];
+          output[destIdx] = output[sourceIdx];
+          output[sourceIdx] = swapValue;
         }
-      });
-
-      // Grab the last value from the invalid array, if the array has odd length
-      const single = invalidPositions.length % 2 === 1
-        ? invalidPositions.pop()
-        : undefined;
-
-      // Generate pairs of remaining invalid indexes
-      const pairs = [];
-      for (let i = 0; i < invalidPositions.length - 1; i += 2) {
-        pairs.push([invalidPositions[i], invalidPositions[i + 1]]);
+        break;
       }
+      case UNIQUE_IDX: {
+        // Modified Fisher-Yates shuffle which ensures that all elements will move, that is,
+        // no array element will retain its original position
 
-      // Swap the indexes of each pair
-      pairs.forEach((pair) => {
-        const [a, b] = pair;
-        indexes[a] = b;
-        indexes[b] = a;
-      });
+        // Instead of swapping array values, we're here swapping array indexes
+        const indexes = range(length).reverse();
 
-      // Process the single invalid index
-      if (single !== undefined) {
-        // Generate a random index to use for swapping the single invalid index
-        swapIdx = ~~(Math.random() * (indexes.length - 1)) + single + 1;
-        swapIdx %= indexes.length;
+        // Single pass through of the indexed array using Fischer-Yates
+        for (let i = 0; i < length; i++) {
+          // Determine the remaining length
+          const currLength = length - i;
 
-        indexes[single] = indexes[swapIdx];
-        indexes[swapIdx] = single;
+          // Compute source idx
+          const sourceIdx = currLength - 1;
+
+          // Generate random destination idx
+          const destIdx = ~~(Math.random() * currLength);
+
+          // Swap the indexes at the sourceIdx and destIdx
+          swapIdx = indexes[destIdx];
+          indexes[destIdx] = indexes[sourceIdx];
+          indexes[sourceIdx] = swapIdx;
+        }
+
+        // Determine which indexes did not move during the shuffling process
+        const badPos = [];
+        const goodPos = [];
+        indexes.forEach((d, i) => {
+          if (d === i) {
+            badPos.push(d);
+          } else {
+            goodPos.push(d);
+          }
+        });
+
+        if (badPos.length === indexes.length) {
+          // In this case all indexes remain in their original position...
+
+          // Rotate the array left a random number of times
+          const rotateCount = indexes.length === 3
+            ? ~~(Math.random() * 2) + 1 // Special case for array length of 3
+            : ~~(Math.random() * (indexes.length - 2)) + 1; // All other array lengths
+
+          for (let i = 0; i < rotateCount; i++) {
+            const idx = indexes.shift();
+            indexes.push(idx);
+          }
+        } else {
+          // In this case, some (but not all) values remain in the original position...
+
+          // Here badPos array can contain up to (indexes.length - 2) indexes,
+          // as it is logically impossible for (indexes.length -1) to exist as
+          // that would imply that all but one element is in the original
+          // position
+          let idxA;
+          let idxB;
+          let posA;
+          let posB;
+
+          while (badPos.length > 0) {
+            if (badPos.length === 1) {
+              // Here we're swapping the single badPos element with a random
+              // indexes element
+              idxA = ~~(Math.random() * goodPos.length);
+              posA = goodPos[idxA];
+              posB = badPos.pop();
+              swapValue = indexes[posA];
+              indexes[posA] = indexes[posB];
+              indexes[posB] = swapValue;
+
+            } else {
+              // Here we're swapping a random badPos element with another random
+              // badPos element. The badPos array keeps shrinking until only
+              // one element remains, which will be handled by the code just above
+              idxA = ~~(Math.random() * badPos.length);
+              posA = badPos.splice(idxA, 1)[0];
+              idxB = ~~(Math.random() * badPos.length);
+              posB = badPos.splice(idxB, 1)[0];
+              indexes[posA] = posB;
+              indexes[posB] = posA;
+            }
+          }
+        }
+
+        // Refill the output array using the random indexes just generated
+        const tempOutput = output.slice();
+        output.length = 0;
+        indexes.forEach((d) => output.push(tempOutput[d]));
+        break;
       }
-
-      // Refill the output array using the random indexes just generated
-      const tempOutput = output.slice();
-      output.length = 0;
-      indexes.forEach((d) => output.push(tempOutput[d]));
+      default:
+        console.error(`Invalid algorithm type argument: ${type}`);
+        return null;
     }
 
-    // Return the unsorted (shuffled) array
+    // Return the shuffled array
     return output;
   }
 
