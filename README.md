@@ -20,7 +20,7 @@ Two algorithms are available:
 
 ### Demo
 
-The module is alive (here)[https://bl.ocks.org/boeric/35eec347e240c6e41ebe04d85e28de9d]. The gist is (here)[https://gist.github.com/boeric/35eec347e240c6e41ebe04d85e28de9d]
+The module is alive [here](https://bl.ocks.org/boeric/35eec347e240c6e41ebe04d85e28de9d). The gist is [here](https://gist.github.com/boeric/35eec347e240c6e41ebe04d85e28de9d)
 
 
 ### Installation
