@@ -1,3 +1,7 @@
+
+[![NPM package][npm-img]][npm-url]
+[![Build Size][build-size-img]][build-size-url]
+
 ## Unsort/shuffle an arbitrary array
 
 The **`unsort`** method unsorts (shuffles) and returns a copy of the input array.
@@ -93,3 +97,8 @@ If the passed argument is **not an array**, a **TypeError** is thrown
 ### Please note
 
 If an array with the length of zero or one, the array is returned
+
+[npm-img]: https://img.shields.io/npm/v/array-unsort.svg
+[npm-url]: https://npmjs.org/package/array-unsort
+[build-size-img]: https://img.shields.io/bundlephobia/minzip/array-unsort.svg
+[build-size-url]: https://bundlephobia.com/result?p=array-unsort
