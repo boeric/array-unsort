@@ -4,7 +4,7 @@
 
 ## Unsort/shuffle an arbitrary array
 
-The **`unsort`** method unsorts (shuffles) and returns a copy of the input array.
+The **`unsort`** method unsorts (shuffles) the input array and returns a new array.
 
 The **`unsortInplace`** method unsorts the input array in-place.
 
