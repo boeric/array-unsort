@@ -3,7 +3,7 @@
 
 /**
  * array-unsort
- * Version: 1.1.0
+ * Version: 1.1.4
  * Purpose: Unsorts (shuffles) an arbitrary array
  * Modes: In-place unsort, or new unsorted array
  * Algorithms:
@@ -14,7 +14,7 @@
  */
 
 (function (exports) {
-  const version = '1.1.0';
+  const version = '1.1.4';
   const FISHER_YATES = 'fisher-yates';
   const UNIQUE_IDX = 'unique-idx';
 
@@ -31,10 +31,28 @@
     return a;
   }
 
+  function validateArray(input) {
+    if (!input) {
+      throw new ReferenceError('Missing input argument');
+    } else if (Array.isArray(input) === false) {
+      throw new TypeError('Argument is not an array');
+    }
+  }
+
+  function validateType(type) {
+    if (![UNIQUE_IDX, FISHER_YATES].includes(type)) {
+      throw new ReferenceError(`Invalid type argument: ${type}`);
+    }
+  }
+
   // Unsort the output array either using Fisher-Yates or using modified Fisher-Yates, the latter
   // guarantees that no array element will remain in its original position after unsort
-  function unsort(output, type) {
-    const { length } = output;
+  function unsort(array, type) {
+    // Validate input
+    validateArray(array);
+    validateType(type);
+
+    const { length } = array;
     let swapIdx;
     let swapValue;
 
@@ -43,15 +61,15 @@
       case 0:
       case 1:
         // Just return the array of 0 or 1 elements
-        return output;
+        return array;
       case 2:
         // Swap the two elements
-        swapIdx = output[0];
-        output[0] = output[1];
-        output[1] = swapIdx;
+        swapIdx = array[0];
+        array[0] = array[1];
+        array[1] = swapIdx;
 
         // Returned the shuffled array
-        return output;
+        return array;
       default:
     }
 
@@ -70,9 +88,9 @@
           const destIdx = ~~(Math.random() * currLength);
 
           // Swap the values at the source and destination positions
-          swapValue = output[destIdx];
-          output[destIdx] = output[sourceIdx];
-          output[sourceIdx] = swapValue;
+          swapValue = array[destIdx];
+          array[destIdx] = array[sourceIdx];
+          array[sourceIdx] = swapValue;
         }
         break;
       }
@@ -161,9 +179,9 @@
         }
 
         // Refill the output array using the random indexes just generated
-        const tempOutput = output.slice();
-        output.length = 0;
-        indexes.forEach((d) => output.push(tempOutput[d]));
+        const tempArray = array.slice();
+        array.length = 0;
+        indexes.forEach((d) => array.push(tempArray[d]));
         break;
       }
       default:
@@ -172,34 +190,12 @@
     }
 
     // Return the shuffled array
-    return output;
+    return array;
   }
 
-  function validateArray(input) {
-    if (!input) {
-      throw new ReferenceError('Missing input argument');
-    } else if (Array.isArray(input) === false) {
-      throw new TypeError('Argument is not an array');
-    }
-  }
-
-  function validateType(type) {
-    if (![UNIQUE_IDX, FISHER_YATES].includes(type)) {
-      throw new ReferenceError(`Invalid type argument: ${type}`);
-    }
-  }
-
-  exports.unsort = (input, type = FISHER_YATES) => {
-    validateArray(input);
-    validateType(type);
-    return unsort(input.slice(), type);
-  };
-
-  exports.unsortInplace = (input, type = FISHER_YATES) => {
-    validateArray(input);
-    validateType(type);
-    return unsort(input, type);
-  };
+  // Exports
+  exports.unsort = (input, type = FISHER_YATES) => unsort(input.slice(), type);
+  exports.unsortInplace = (input, type = FISHER_YATES) => unsort(input, type);
 
   exports.version = version;
 })(typeof exports === 'undefined' ? this.unsort = {} : exports);
