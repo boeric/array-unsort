@@ -31,6 +31,10 @@ The module is alive [here](https://bl.ocks.org/boeric/35eec347e240c6e41ebe04d85e
 
 `npm install array-unsort --save`
 
+### Dependencies
+
+None
+
 ### Examples
 
 ```
