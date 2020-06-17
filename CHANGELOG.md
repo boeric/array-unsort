@@ -1,3 +1,6 @@
+1.1.5 - 2020-06-17 –
+- Simplification
+
 1.1.4 - 2020-06-13 – ede1e8bdb71d438b0f324c2b2091dbdf47aef3e7
 - Simplification
 

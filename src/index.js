@@ -14,7 +14,7 @@
  */
 
 (function (exports) {
-  const version = '1.1.4';
+  const version = '1.1.5';
   const FISHER_YATES = 'fisher-yates';
   const UNIQUE_IDX = 'unique-idx';
 
@@ -24,11 +24,7 @@
       throw new Error(`Invalid array length: ${length}`);
     }
 
-    const a = [];
-    for (let i = 0; i < length; i++) {
-      a.push(i);
-    }
-    return a;
+    return [...Array(length).keys()];
   }
 
   function validateArray(input) {
