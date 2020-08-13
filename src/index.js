@@ -3,18 +3,18 @@
 
 /**
  * array-unsort
- * Version: 1.1.4
+ * Version: 1.1.6
  * Purpose: Unsorts (shuffles) an arbitrary array
  * Modes: In-place unsort, or new unsorted array
  * Algorithms:
  *   - Fisher-Yates
  *   - Modified Fisher-Yates (which guarantees that no array elements remain at the
  *     same index after shuffling)
- * Copyright: Bo Ericsson 2020
+ * By Bo Ericsson 2020
  */
 
 (function (exports) {
-  const version = '1.1.5';
+  const version = '1.1.6';
   const FISHER_YATES = 'fisher-yates';
   const UNIQUE_IDX = 'unique-idx';
 

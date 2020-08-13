@@ -86,12 +86,6 @@ const ts1 = Date.now() - now;
 console.log(`All 1 million elements shuffled and at new indexes): ${ts1}ms`); // 272ms
 ```
 
-### Test
-
-```
-npm run test
-```
-
 ### Errors
 
 If **no** array is passed, a **ReferenceError** is thrown.
@@ -106,3 +100,11 @@ If an array with the length of zero or one, the array is returned
 [npm-url]: https://npmjs.org/package/array-unsort
 [build-size-img]: https://img.shields.io/bundlephobia/minzip/array-unsort.svg
 [build-size-url]: https://bundlephobia.com/result?p=array-unsort
+
+### Test
+
+Run the test suite like so:
+
+```
+npm run test
+```
